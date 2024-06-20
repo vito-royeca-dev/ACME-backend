@@ -12,10 +12,7 @@ function isAdmin(req, res, next) {
         return res.status(401).json({ message: 'Unauthorized: Token missing' });
     }
     try {
-        // Verify the token
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        console.log(decoded);
-        // Check if user is admin
         if (decoded.username === 'admin') {
             req.user = decoded;
             next();

@@ -17,7 +17,6 @@ router.post('/google', async (req, res) => {
   
       const payload = ticket.getPayload();
       const { email, name } = payload;
-    //   console.log(payload);
       // Check if user exists in database
       let user = await User.findOne({ email });
   
@@ -28,8 +27,10 @@ router.post('/google', async (req, res) => {
       }
       // Generate JWT token
       const token = generateJwtToken(user);
+      const id = user._id;
       // Return token to client
-      res.json({ token });
+      console.log(id);
+      res.json({ token, id });
     } catch (error) {
       console.error('Google OAuth Error:', error);
       res.status(500).json({ message: 'Google OAuth error' });
