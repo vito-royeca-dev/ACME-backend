@@ -78,7 +78,6 @@ router.post('/', isAdmin, validateZone, async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const zones = await Zone.find();
-        console.log(zones);
         res.send(zones);
     } catch (error) {
         console.error('Error fetching zones:', error);

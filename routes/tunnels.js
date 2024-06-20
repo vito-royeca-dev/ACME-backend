@@ -83,7 +83,6 @@ router.post('/', isAdmin, validateTunnel, async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const tunnels = await Tunnel.find();
-        console.log(tunnels);
         res.send(tunnels);
     } catch (error) {
         console.error('Error fetching tunnels:', error);
