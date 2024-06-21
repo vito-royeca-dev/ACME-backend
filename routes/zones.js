@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const Zone = require('../models/Zone');
 const jwt = require('jsonwebtoken');
+const { io } = require('../server');
 
 // Middleware to check admin permissions
 function isAdmin(req, res, next) {
@@ -67,6 +68,12 @@ router.post('/', isAdmin, validateZone, async (req, res) => {
         });
 
         await newZone.save();
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "create",
+            type: "zone",
+            data: newZone,
+        });
+
         res.status(201).send(newZone);
     } catch (error) {
         console.error('Error creating zone:', error);
@@ -100,6 +107,13 @@ router.put('/:id', isAdmin, validateZone, async (req, res) => {
         if (!updatedZone) {
             return res.status(404).json({ message: 'Zone not found' });
         }
+
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "update",
+            type: "zone",
+            data: newZone,
+        });
+
         res.send(updatedZone);
     } catch (error) {
         console.error('Error updating zone:', error);
@@ -116,6 +130,12 @@ router.delete('/:id', isAdmin, async (req, res) => {
         if (!deletedZone) {
             return res.status(404).json({ message: 'Zone not found' });
         }
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "delete",
+            type: "zone",
+            data: newZone,
+        });
+
         res.send({ message: 'Zone deleted' });
     } catch (error) {
         console.error('Error deleting zone:', error);

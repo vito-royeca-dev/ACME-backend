@@ -44,7 +44,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/auth', require('./routes/auth'));
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-const io = socketIo(server);
+export const io = socketIo(server);
 
 io.on('connection', (socket) => {
   console.log('New client connected');

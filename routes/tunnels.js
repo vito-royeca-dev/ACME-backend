@@ -3,6 +3,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const Tunnel = require('../models/Tunnel');
+const { io } = require('../server');
+const { ZONE_TUNNEL_change, ZONE_TUNNEL_CHANGE } = require('../types/eventTyeps');
 
 // Middleware to check if the user is an admin
 function isAdmin(req, res, next) {
@@ -72,6 +74,12 @@ router.post('/', isAdmin, validateTunnel, async (req, res) => {
         });
 
         await newTunnel.save();
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "create",
+            type: "tunnel",
+            data: newTunnel,
+        });
+
         res.status(201).send(newTunnel);
     } catch (error) {
         console.error('Error creating tunnel:', error);
@@ -102,6 +110,12 @@ router.put('/:id', isAdmin, validateTunnel, async (req, res) => {
 
     try {
         const updatedTunnel = await Tunnel.findByIdAndUpdate(id, updates, { new: true });
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "update",
+            type: "tunnel",
+            data: updatedTunnel,
+        });
+        
         res.send(updatedTunnel);
     } catch (error) {
         console.error('Error updating tunnel:', error);
@@ -114,6 +128,12 @@ router.delete('/:id', isAdmin, async (req, res) => {
     const { id } = req.params;
     try {
         await Tunnel.findByIdAndDelete(id);
+        io.emit(ZONE_TUNNEL_CHANGE, {
+            action: "delete",
+            type: "tunnel",
+            data: id,
+        });
+
         res.send({ message: 'Tunnel deleted' });
     } catch (error) {
         console.error('Error deleting tunnel:', error);
