@@ -10,7 +10,7 @@ const zoneSchema = new mongoose.Schema({
     required: true // Assuming longitude is mandatory
   },
   radius: {
-    type: String,
+    type: Number,
     required: true // Assuming radius is mandatory
   },
   color: String, // Optional field for color
