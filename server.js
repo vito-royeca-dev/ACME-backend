@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const socketIo = require('socket.io');
-
+const { setupSocket } = require('./socket');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -37,20 +37,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Middleware: Passport initialization
-app.use('/api/tunnels', require('./routes/tunnels'));
-app.use('/api/zones', require('./routes/zones'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/auth', require('./routes/auth'));
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const io = socketIo(server);
 
-io.on('connection', (socket) => {
-  console.log('New client connected');
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
-});
+app.use('/api/tunnels', require('./routes/tunnels')(io));
+app.use('/api/zones', require('./routes/zones')(io));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/auth', require('./routes/auth'));
 
-module.exports = { app, io };
+setupSocket(io);
+
+module.exports = { server, app };
