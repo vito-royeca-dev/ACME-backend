@@ -11,12 +11,11 @@ const clients = {
 
 router.post('/google', async (req, res) => {
   try {
-    const { idToken } = req.body;
-    const ticket = await client.verifyIdToken({
+    const { idToken, platform } = req.body;
+    const ticket = await clients[platform].verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
     const payload = ticket.getPayload();
     const { email, name } = payload;
     let user = await User.findOne({ email });
@@ -25,6 +24,7 @@ router.post('/google', async (req, res) => {
       user = new User({ email, name });
       await user.save();
     }
+    
     const token = generateJwtToken(user);
     const id = user._id;
 

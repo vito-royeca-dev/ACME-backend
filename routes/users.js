@@ -22,8 +22,8 @@ module.exports = (io) => {
   router.get('/users-by-date/:date', async (req, res) => {
     try {
       const { date } = req.params;
-      const startDate = new Date(date).setHours(0, 0, 0, 0);
-      const endDate = new Date(date).setHours(23, 59, 59, 999);
+      const startDate = new Date(`${date}T00:00:00.000Z`);
+      const endDate = new Date(`${date}T23:59:59.999Z`);
   
       const usersWithDistance = await User.aggregate([
         {
@@ -83,7 +83,6 @@ module.exports = (io) => {
   router.post('/update-distance-location', async (req, res) => {
     
     const { userId, distance, location } = req.body;
-    console.log("update-distance-location", userId, distance, location);
     try {
       const today = new Date().setHours(0, 0, 0, 0);
       const existingDistance = await Distance.findOne({ userId, date: today });
@@ -106,6 +105,7 @@ module.exports = (io) => {
       io.emit(LOCATION_UPDATE, {
         userId,
         location,
+        distance,
       });
 
       res.status(200).send('Distance and location updated successfully');
@@ -117,7 +117,6 @@ module.exports = (io) => {
 
   router.post('/update-credits' , async (req, res) => {
     const { userId, credits } = req.body;
-    console.log("update-crdits", userId, credits);
     try {
       const user = await User.findById(userId);
       if (user) {
