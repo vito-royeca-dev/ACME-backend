@@ -3,13 +3,22 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
 const socketIo = require('socket.io');
 const { setupSocket } = require('./socket');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect('mongodb://localhost/acme-maps', {});
+const uri = "mongodb+srv://timm911:4VgZHpFaChr19vCd@acme-cluster.1w02jwz.mongodb.net/?retryWrites=true&w=majority&appName=ACME-Cluster";
+
+mongoose.connect(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 mongoose.connection.on('connected', () => {
   console.log('Connected to MongoDB');
