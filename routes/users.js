@@ -82,26 +82,29 @@ module.exports = (io) => {
 
   router.post('/update-distance-location', async (req, res) => {
     
-    const { userId, distance, location } = req.body;
+    const { userId, location, distance } = req.body;
+    console.log(userId, distance, location);
     try {
       const today = new Date().setHours(0, 0, 0, 0);
       const existingDistance = await Distance.findOne({ userId, date: today });
   
       if (existingDistance) {
         existingDistance.distance += distance;
+        console.log(existingDistance);
         await existingDistance.save();
       } else {
         const newDistance = new Distance({ userId, date: today, distance });
+        console.log(newDistance);
         await newDistance.save();
       }
-  
+      
       // Update user credits
       const user = await User.findById(userId);
       if (user) {
         user.location = location; // Assume 1 distance unit equals 1 credit
         await user.save();
       }
-
+      console.log(user);
       io.emit(LOCATION_UPDATE, {
         userId,
         location,
@@ -110,6 +113,7 @@ module.exports = (io) => {
 
       res.status(200).send('Distance and location updated successfully');
     } catch (error) {
+      console.log(error);
       console.error('Error updating distance and location:', error);
       res.status(500).send('Internal Server Error');
     }

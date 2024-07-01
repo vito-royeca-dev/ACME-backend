@@ -53,6 +53,7 @@ const io = socketIo(server);
 app.use('/api/tunnels', require('./routes/tunnels')(io));
 app.use('/api/zones', require('./routes/zones')(io));
 app.use('/api/users', require('./routes/users')(io));
+app.use('/api/messages', require('./routes/messages')(io));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/auth', require('./routes/auth'));
 

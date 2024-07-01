@@ -12,10 +12,12 @@ const clients = {
 router.post('/google', async (req, res) => {
   try {
     const { idToken, platform } = req.body;
+    // const audience = platform === "ios" ? process.env.IOS_GOOGLE_CLIENT_ID : process.env.ANDROID_GOOGLE_CLIENT_ID;
     const ticket = await clients[platform].verifyIdToken({
       idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audienc: process.env.WEB_CLIENT_ID,
     });
+    
     const payload = ticket.getPayload();
     const { email, name } = payload;
     let user = await User.findOne({ email });
